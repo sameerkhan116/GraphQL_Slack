@@ -4,11 +4,15 @@ import Sequelize from 'sequelize'; // Sequelize for creating the db.
 const sequelize = new Sequelize('graphql_slack', 'root', '12345', {
   dialect: 'postgres', // specifying the language of the database
   operatorsAliases: Sequelize.Op, // to remove the deprecation warning
+  define: {
+    underscored: true,
+  },
 });
 
-// to create the db with the different models that we created.
-// this the db that will be exported and used in index.js when we
-// do models.sequelize.sync.
+/*
+To create the db with the different models that we created.
+This the db that will be exported and used in index.js when we do models.sequelize.sync.
+*/
 const db = {
   User: sequelize.import('./user'),
   Channel: sequelize.import('./channel'),

@@ -4,5 +4,9 @@
   "plugins": [
     "jsx-a11y",
     "import"
-  ]
+  ],
+  "rules": {
+    "no-warning-comments": "off",
+    "no-console":"off"
+  }
 }
