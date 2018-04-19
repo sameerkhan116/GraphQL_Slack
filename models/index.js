@@ -9,10 +9,9 @@ const sequelize = new Sequelize('graphql_slack', 'root', '12345', {
   },
 });
 
-/*
-To create the db with the different models that we created.
-This the db that will be exported and used in index.js when we do models.sequelize.sync.
-*/
+// To create the db with the different models that we create
+// This the db that will be exported and used in index.js when we do models.sequelize.sync.
+
 const db = {
   User: sequelize.import('./user'),
   Channel: sequelize.import('./channel'),

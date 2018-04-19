@@ -5,6 +5,7 @@ import { makeExecutableSchema } from 'graphql-tools'; // to create the schema wi
 import expressPlayground from 'graphql-playground-middleware-express'; // to test our queries and resolvers. Similar to graphiql.
 import { fileLoader, mergeTypes, mergeResolvers } from 'merge-graphql-schemas'; // for modularizing our graphql types.
 import path from 'path'; // for specifying the dirname to types and resolvers
+import cors from 'cors'; // for cross origin resource sharing
 import 'colors'; // for adding colors to the terminal.
 
 import models from './models'; // the DB models we setup using psql and sequelize.
@@ -18,6 +19,7 @@ const endpoint = '/graphql'; // our graphql enpoint
 const schema = makeExecutableSchema({ typeDefs, resolvers });
 
 // setting up the /graphql endpoint with graphqlExpress that requires the schema.
+app.use(cors('*'));
 app.use(endpoint, bodyParser.json(), graphqlExpress({
   schema,
   context: {
@@ -31,7 +33,7 @@ app.use('/playground', expressPlayground({ endpoint })); // the playground enpoi
 
 // before running the server, we need to sync the db models that we created with sequelize.
 // this returns a promise. When it is resolved, we can start the server.
-models.sequelize.sync({}).then(() => {
+models.sequelize.sync().then(() => {
   app.listen(PORT, () => {
     console.log(`Running on http://localhost:${PORT}`.underline.yellow);
   });
