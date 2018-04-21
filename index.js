@@ -17,7 +17,8 @@ const app = express(); // app - an executable server using express.
 const endpoint = '/graphql'; // our graphql enpoint
 // the schema we create by passing the typedefs and their resolvers.
 const schema = makeExecutableSchema({ typeDefs, resolvers });
-
+const SECRET = 'kdshakdjlasdjaskdj'; // required for login authentication
+const SECRET2 = 'dasldkasldkashasjd'; // required for login authentication
 // setting up the /graphql endpoint with graphqlExpress that requires the schema.
 app.use(cors('*'));
 app.use(endpoint, bodyParser.json(), graphqlExpress({
@@ -27,6 +28,8 @@ app.use(endpoint, bodyParser.json(), graphqlExpress({
     user: {
       id: 1,
     },
+    SECRET,
+    SECRET2,
   },
 }));
 app.use('/playground', expressPlayground({ endpoint })); // the playground enpoint for testing graphql queries and mutations.

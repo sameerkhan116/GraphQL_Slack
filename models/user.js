@@ -1,3 +1,5 @@
+import bcrypt from 'bcrypt';
+
 export default (sequelize, DataTypes) => {
   // define new db table (user)
   const User = sequelize.define('user', {
@@ -26,7 +28,21 @@ export default (sequelize, DataTypes) => {
         },
       },
     },
-    password: DataTypes.STRING,
+    password: {
+      type: DataTypes.STRING,
+      validate: {
+        len: {
+          args: [5, 100],
+          msg: 'The password need to be between 5 and 100 characters long',
+        },
+      },
+    },
+  }, {
+    hooks: {
+      afterValidate: async (user) => {
+        user.password = await bcrypt.hash(user.password, 12);
+      },
+    },
   });
 
   // here we define the associations in the db. In this,
