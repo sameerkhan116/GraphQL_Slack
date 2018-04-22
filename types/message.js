@@ -1,3 +1,6 @@
+// the message type has an ID, the text associated with it, the user who sent the message
+// and the channel in which the message is.
+
 export default `
    type Message {
     id: ID!

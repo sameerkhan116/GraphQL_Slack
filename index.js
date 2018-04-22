@@ -22,12 +22,12 @@ export const SECRET2 = 'dasldkasldkashasjd'; // required for login authenticatio
 const schema = makeExecutableSchema({ typeDefs, resolvers });
 // setting up the /graphql endpoint with graphqlExpress that requires the schema.
 app.use(cors('*'));
-app.use(addUser);
+app.use(addUser); // use the add user middleware to attach user to req.
 app.use(endpoint, bodyParser.json(), graphqlExpress(req => ({
   schema,
   context: {
-    models,
-    user: req.user,
+    models, // attach the models (db)
+    user: req.user, // attach the user from addUser middleware
     SECRET,
     SECRET2,
   },

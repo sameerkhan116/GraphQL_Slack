@@ -1,10 +1,14 @@
+// the channel type returns an id, name, public boolean value, messages in the channel
+// (which is an array), and the users in the channel which is an array of users.
+// the mutation available on channel is createChannel.
+
 export default `
   type Channel {
     id: ID!
     name: String!
     public: Boolean
     messages: [Message!]!
-    user: [User!]!
+    users: [User!]!
   }
 
   type Mutation {
