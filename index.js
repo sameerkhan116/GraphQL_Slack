@@ -9,29 +9,29 @@ import cors from 'cors'; // for cross origin resource sharing
 import 'colors'; // for adding colors to the terminal.
 
 import models from './models'; // the DB models we setup using psql and sequelize.
+import { addUser } from './addUser';
 
 const typeDefs = mergeTypes(fileLoader(path.join(__dirname, './types'))); // // merege all modularized types
 const resolvers = mergeResolvers(fileLoader(path.join(__dirname, './resolvers'))); // merege all modularized resolvers
 const PORT = 3000; // port on which our app is running.
 const app = express(); // app - an executable server using express.
 const endpoint = '/graphql'; // our graphql enpoint
+export const SECRET = 'kdshakdjlasdjaskdj'; // required for login authentication
+export const SECRET2 = 'dasldkasldkashasjd'; // required for login authentication
 // the schema we create by passing the typedefs and their resolvers.
 const schema = makeExecutableSchema({ typeDefs, resolvers });
-const SECRET = 'kdshakdjlasdjaskdj'; // required for login authentication
-const SECRET2 = 'dasldkasldkashasjd'; // required for login authentication
 // setting up the /graphql endpoint with graphqlExpress that requires the schema.
 app.use(cors('*'));
-app.use(endpoint, bodyParser.json(), graphqlExpress({
+app.use(addUser);
+app.use(endpoint, bodyParser.json(), graphqlExpress(req => ({
   schema,
   context: {
     models,
-    user: {
-      id: 1,
-    },
+    user: req.user,
     SECRET,
     SECRET2,
   },
-}));
+})));
 app.use('/playground', expressPlayground({ endpoint })); // the playground enpoint for testing graphql queries and mutations.
 
 // before running the server, we need to sync the db models that we created with sequelize.
