@@ -4,7 +4,7 @@
 
 export default `
   type Channel {
-    id: ID!
+    id: Int!
     name: String!
     public: Boolean
     messages: [Message!]!
@@ -12,6 +12,6 @@ export default `
   }
 
   type Mutation {
-    createChannel(teamId: ID!, name: String!, public: Boolean=false): Boolean!
+    createChannel(teamId: Int!, name: String!, public: Boolean=false): Boolean!
   }
 `;

@@ -3,13 +3,13 @@
 
 export default `
    type Message {
-    id: ID!
+    id: Int!
     text: String!
     user: User!
     channel: Channel!
   }
 
   type Mutation {
-    createMessage(channelId: ID!, text: String!): Boolean!
+    createMessage(channelId: Int!, text: String!): Boolean!
   }
 `;
