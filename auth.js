@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken'; // to sign, verify and decode tokens
-import _ from 'lodash'; // for certain helper functions
+import { pick } from 'lodash'; // for certain helper functions
 import bcrypt from 'bcrypt'; // to compare the hashed password
 
 // create tokens function - takes a user, secret and secret2 and signs the token using the userid
@@ -9,7 +9,7 @@ import bcrypt from 'bcrypt'; // to compare the hashed password
 export const createTokens = (user, secret, secret2) => {
   const createToken = jwt.sign(
     {
-      user: _.pick(user, ['id', 'username']),
+      user: pick(user, ['id', 'username']),
     },
     secret,
     {
@@ -19,7 +19,7 @@ export const createTokens = (user, secret, secret2) => {
 
   const refreshToken = jwt.sign(
     {
-      user: _.pick(user, 'id'),
+      user: pick(user, 'id'),
     },
     secret2,
     {

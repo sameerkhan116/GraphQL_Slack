@@ -32,7 +32,7 @@ export default `
   }
 
   type Mutation {
-    login(email: String!, password: String!): LoginResponse!
     register(username: String!, email: String!, password: String!): RegisterResponse!
+    login(email: String!, password: String!): LoginResponse!
   }
 `;
