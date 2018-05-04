@@ -17,6 +17,7 @@ const db = {
   Channel: sequelize.import('./channel'),
   Message: sequelize.import('./message'),
   Team: sequelize.import('./team'),
+  Member: sequelize.import('./member'),
 };
 
 // This is used to check if any of the models has association

@@ -17,11 +17,17 @@ export default `
 
   type CreateTeamResponse {
     ok: Boolean!
-    team: Team!
+    team: Team
+    errors: [Error!]
+  }
+
+  type VoidResponse {
+    ok: Boolean!
     errors: [Error!]
   }
 
   type Mutation {
     createTeam(name: String!): CreateTeamResponse!
+    addMember(email: String!, teamId: Int!): VoidResponse!
   }
 `;
