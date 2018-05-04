@@ -5,17 +5,31 @@ export default {
   Query: {
     allTeams: requiresAuth.createResolver((parent, args, { models, user }) =>
       models.Team.findAll({ where: { owner: user.id } }, { raw: true })),
+    inviteTeams: requiresAuth.createResolver((parent, args, { models, user }) =>
+      models.Team.findAll({
+        include: [
+          {
+            model: models.User,
+            where: {
+              id: user.id,
+            },
+          },
+        ],
+      }, { raw: true })),
   },
   Mutation: {
     // the create team mutation - uses the models and the user passed in context to create a team
     // and return a response corresponding to the creatTeamResponse in the schema.
     createTeam: requiresAuth.createResolver(async (parent, args, { models, user }) => {
       try {
-        const team = await models.Team.create({ ...args, owner: user.id });
-        await models.Channel.create({ name: 'general', public: true, teamId: team.id });
+        const response = await models.sequelize.transaction(async () => {
+          const team = await models.Team.create({ ...args, owner: user.id });
+          await models.Channel.create({ name: 'general', public: true, teamId: team.id });
+          return team;
+        });
         return {
           ok: true,
-          team,
+          team: response,
         };
       } catch (err) {
         console.log(err);
