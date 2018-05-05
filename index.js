@@ -4,6 +4,9 @@ import { graphqlExpress } from 'apollo-server-express'; // for setting up the /g
 import { makeExecutableSchema } from 'graphql-tools'; // to create the schema with the type definitions and resolvers that we write.
 import expressPlayground from 'graphql-playground-middleware-express'; // to test our queries and resolvers. Similar to graphiql.
 import { fileLoader, mergeTypes, mergeResolvers } from 'merge-graphql-schemas'; // for modularizing our graphql types.
+import { createServer } from 'http';
+import { execute, subscribe } from 'graphql';
+import { SubscriptionServer } from 'subscriptions-transport-ws';
 import path from 'path'; // for specifying the dirname to types and resolvers
 import cors from 'cors'; // for cross origin resource sharing
 import 'colors'; // for adding colors to the terminal.
@@ -15,6 +18,7 @@ const typeDefs = mergeTypes(fileLoader(path.join(__dirname, './types'))); // // 
 const resolvers = mergeResolvers(fileLoader(path.join(__dirname, './resolvers'))); // merege all modularized resolvers
 const PORT = 3000; // port on which our app is running.
 const app = express(); // app - an executable server using express.
+const server = createServer(app);
 const endpoint = '/graphql'; // our graphql enpoint
 export const SECRET = 'kdshakdjlasdjaskdj'; // required for login authentication
 export const SECRET2 = 'dasldkasldkashasjd'; // required for login authentication
@@ -37,7 +41,16 @@ app.use('/playground', expressPlayground({ endpoint })); // the playground enpoi
 // before running the server, we need to sync the db models that we created with sequelize.
 // this returns a promise. When it is resolved, we can start the server.
 models.sequelize.sync().then(() => {
-  app.listen(PORT, () => {
-    console.log(`Running on http://localhost:${PORT}`.underline.yellow);
+  server.listen(PORT, () => {
+    // eslint-disable-next-line
+    new SubscriptionServer({
+      execute,
+      subscribe,
+      schema,
+    }, {
+      server,
+      path: '/subscriptions',
+    });
+    console.log(`Listening on http://localhost:${PORT}`.yellow.underline);
   });
 });
