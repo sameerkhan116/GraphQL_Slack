@@ -6,16 +6,10 @@ export default {
     allTeams: requiresAuth.createResolver((parent, args, { models, user }) =>
       models.Team.findAll({ where: { owner: user.id } }, { raw: true })),
     inviteTeams: requiresAuth.createResolver((parent, args, { models, user }) =>
-      models.Team.findAll({
-        include: [
-          {
-            model: models.User,
-            where: {
-              id: user.id,
-            },
-          },
-        ],
-      }, { raw: true })),
+      models.sequelize.query('SELECT * FROM teams JOIN members ON id = team_id WHERE user_id = ?', {
+        replacements: [user.id],
+        model: models.Team,
+      })),
   },
   Mutation: {
     // the create team mutation - uses the models and the user passed in context to create a team
