@@ -2,22 +2,14 @@ import formatErrors from '../formatErrors'; // for formatting the sequelize vali
 import { requiresAuth } from '../permissions'; // for checking if user available in context
 
 export default {
-  Query: {
-    allTeams: requiresAuth.createResolver((parent, args, { models, user }) =>
-      models.Team.findAll({ where: { owner: user.id } }, { raw: true })),
-    inviteTeams: requiresAuth.createResolver((parent, args, { models, user }) =>
-      models.sequelize.query('SELECT * FROM teams JOIN members ON id = team_id WHERE user_id = ?', {
-        replacements: [user.id],
-        model: models.Team,
-      })),
-  },
   Mutation: {
     // the create team mutation - uses the models and the user passed in context to create a team
     // and return a response corresponding to the creatTeamResponse in the schema.
     createTeam: requiresAuth.createResolver(async (parent, args, { models, user }) => {
       try {
         const response = await models.sequelize.transaction(async () => {
-          const team = await models.Team.create({ ...args, owner: user.id });
+          const team = await models.Team.create({ ...args });
+          await models.Member.create({ admin: true, teamId: team.id, userId: user.id });
           await models.Channel.create({ name: 'general', public: true, teamId: team.id });
           return team;
         });
@@ -35,13 +27,18 @@ export default {
     }),
     addMember: requiresAuth.createResolver(async (parent, { email, teamId }, { models, user }) => {
       try {
-        const teamPromise = models.Team.findOne({ where: { id: teamId } });
+        const memberPromise = models.Member.findOne({
+          where: {
+            userId: user.id,
+            teamId,
+          },
+        });
         const userToAddPromise = models.User.findOne({ where: { email } });
-        const [team, userToAdd] = await Promise.all([teamPromise, userToAddPromise]);
-        if (team.owner !== user.id) {
+        const [member, userToAdd] = await Promise.all([memberPromise, userToAddPromise]);
+        if (!member.admin) {
           return {
             ok: false,
-            errors: [{ path: 'email', message: 'You cannot add members to the team' }],
+            errors: [{ path: 'admin', message: 'You cannot add members to the team' }],
           };
         }
         if (!userToAdd) {
