@@ -2,6 +2,17 @@ import formatErrors from '../formatErrors'; // for formatting the sequelize vali
 import { requiresAuth } from '../permissions'; // for checking if user available in context
 
 export default {
+  Query: {
+    getTeamMembers: requiresAuth.createResolver(async (parent, { teamId }, { models }) =>
+      models.sequelize.query(
+        'SELECT * FROM users JOIN members on members.user_id = users.id where members.team_id = ?',
+        {
+          replacements: [teamId],
+          model: models.User,
+          raw: true,
+        },
+      )),
+  },
   Mutation: {
     // the create team mutation - uses the models and the user passed in context to create a team
     // and return a response corresponding to the creatTeamResponse in the schema.

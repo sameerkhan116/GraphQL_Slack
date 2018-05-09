@@ -13,7 +13,8 @@ export default `
 
   type Query {
     allTeams: [Team!]!
-    inviteTeams: [Team!]!    
+    inviteTeams: [Team!]!
+    getTeamMembers(teamId: Int!): [User!]!
   }
 
   type CreateTeamResponse {
