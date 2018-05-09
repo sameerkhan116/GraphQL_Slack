@@ -7,6 +7,8 @@ export default {
   Query: {
     me: requiresAuth.createResolver((parent, args, { models, user }) =>
       models.User.findOne({ where: { id: user.id } })),
+    getUser: requiresAuth.createResolver((parent, { userId }, { models }) =>
+      models.User.findOne({ where: { id: userId } })),
     allUsers: (parent, args, { models }) => models.User.findAll(),
   },
   // the login mutation to try login using the strat defined in auth.js
