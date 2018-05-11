@@ -11,6 +11,10 @@ export default `
     directMessages(teamId: Int!, receiverId: Int!): [DirectMessage!]!
   }
 
+  type Subscription {
+    newDirectMessage(teamId: Int!, userId: Int!): DirectMessage!
+  }
+
   type Mutation {
     createDirectMessage(receiverId: Int!, text: String!, teamId: Int!): Boolean!
   }
