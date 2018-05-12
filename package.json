@@ -4,8 +4,9 @@
   "description": "A slack clone using graphql, express and react.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon --exec babel-node index.js"
+    "start": "nodemon --exec babel-node index.js",
+    "test-server": "./reset_test_db.sh; TEST_DB=test_slack nodemon --exec babel-node index.js",
+    "test": "jest"
   },
   "repository": "git+ssh://git@github.com/sameerkhan116/GraphQL_Slack.git",
   "author": "M. Sameer Khan",
@@ -33,6 +34,7 @@
     "subscriptions-transport-ws": "^0.9.8"
   },
   "devDependencies": {
+    "axios": "^0.18.0",
     "babel-cli": "^6.26.0",
     "babel-eslint": "^8.2.3",
     "babel-jest": "^22.4.3",
@@ -41,6 +43,7 @@
     "eslint-config-airbnb": "^16.1.0",
     "eslint-plugin-import": "^2.11.0",
     "eslint-plugin-jsx-a11y": "^6.0.3",
+    "jest": "^22.4.3",
     "nodemon": "^1.17.3"
   }
 }

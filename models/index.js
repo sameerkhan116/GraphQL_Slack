@@ -1,7 +1,7 @@
 import Sequelize from 'sequelize'; // Sequelize for creating the db.
 
 // a sequelize function to connect with the db we created locally.
-const sequelize = new Sequelize('graphql_slack', 'root', '12345', {
+const sequelize = new Sequelize(process.env.TEST_DB || 'graphql_slack', 'root', '12345', {
   dialect: 'postgres', // specifying the language of the database
   operatorsAliases: Sequelize.Op, // to remove the deprecation warning
   define: {
