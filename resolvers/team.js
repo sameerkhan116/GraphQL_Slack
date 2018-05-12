@@ -18,10 +18,16 @@ export default {
     // and return a response corresponding to the creatTeamResponse in the schema.
     createTeam: requiresAuth.createResolver(async (parent, args, { models, user }) => {
       try {
-        const response = await models.sequelize.transaction(async () => {
-          const team = await models.Team.create({ ...args });
-          await models.Member.create({ admin: true, teamId: team.id, userId: user.id });
-          await models.Channel.create({ name: 'general', public: true, teamId: team.id });
+        const response = await models.sequelize.transaction(async (transaction) => {
+          const team = await models.Team.create({ ...args }, { transaction });
+          await models.Member.create(
+            { admin: true, teamId: team.id, userId: user.id },
+            { transaction },
+          );
+          await models.Channel.create(
+            { name: 'general', public: true, teamId: team.id },
+            { transaction },
+          );
           return team;
         });
         return {
