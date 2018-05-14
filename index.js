@@ -14,6 +14,7 @@ import 'colors'; // for adding colors to the terminal.
 import models from './models'; // the DB models we setup using psql and sequelize.
 import { addUser } from './addUser';
 import { refreshTokens } from './auth'; // required for refreshing tokens
+import fileUpload from './fileMiddleware';
 
 const typeDefs = mergeTypes(fileLoader(path.join(__dirname, './types'))); // // merege all modularized types
 const resolvers = mergeResolvers(fileLoader(path.join(__dirname, './resolvers'))); // merege all modularized resolvers
@@ -29,7 +30,7 @@ const schema = makeExecutableSchema({ typeDefs, resolvers });
 // setting up the /graphql endpoint with graphqlExpress that requires the schema.
 app.use(cors('*'));
 app.use(addUser); // use the add user middleware to attach user to req.
-app.use(endpointURL, bodyParser.json(), graphqlExpress(req => ({
+app.use(endpointURL, bodyParser.json(), fileUpload, graphqlExpress(req => ({
   schema,
   context: {
     models, // attach the models (db)

@@ -22,32 +22,38 @@ export default {
       )),
   },
   Mutation: {
-    createMessage: requiresAuth.createResolver(async (parent, args, { models, user }) => {
-      try {
-        const messagePromise = models.Message.create({
-          ...args,
-          userId: user.id,
-        });
+    createMessage:
+      requiresAuth.createResolver(async (parent, { file, ...args }, { models, user }) => {
+        try {
+          const messageData = args;
+          if (file) {
+            messageData.filetype = file.type;
+            messageData.url = file.path;
+          }
+          const messagePromise = models.Message.create({
+            ...messageData,
+            userId: user.id,
+          });
 
-        const userPromise = models.User.findOne({
-          where: {
-            id: user.id,
-          },
-        });
+          const userPromise = models.User.findOne({
+            where: {
+              id: user.id,
+            },
+          });
 
-        const [message, currentUser] = await Promise.all([messagePromise, userPromise]);
+          const [message, currentUser] = await Promise.all([messagePromise, userPromise]);
 
-        pubsub.publish(NEW_CHANNEL_MESSAGE, {
-          channelId: args.channelId,
-          newChannelMessage: { ...message.dataValues, user: currentUser },
-        });
+          pubsub.publish(NEW_CHANNEL_MESSAGE, {
+            channelId: args.channelId,
+            newChannelMessage: { ...message.dataValues, user: currentUser },
+          });
 
-        return true;
-      } catch (err) {
-        console.log(err);
-        return false;
-      }
-    }),
+          return true;
+        } catch (err) {
+          console.log(err);
+          return false;
+        }
+      }),
   },
   Message: {
     user: async ({ user, userId }, args, { models }) => {

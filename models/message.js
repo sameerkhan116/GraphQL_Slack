@@ -2,6 +2,8 @@
 export default(sequelize, DataTypes) => {
   const Message = sequelize.define('message', {
     text: DataTypes.STRING,
+    url: DataTypes.STRING,
+    filetype: DataTypes.STRING,
   });
 
   // Each message in db is associated with a channel using a foreign key channelId.
