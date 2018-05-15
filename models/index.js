@@ -19,6 +19,7 @@ const db = {
   Team: sequelize.import('./team'),
   Member: sequelize.import('./member'),
   DirectMessage: sequelize.import('./directMessage'),
+  PCMember: sequelize.import('./pcMembers'),
 };
 
 // This is used to check if any of the models has association

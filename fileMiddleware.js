@@ -2,6 +2,7 @@ import formidable from 'formidable';
 
 const uploadDir = 'files';
 
+/* eslint-disable-next-line consistent-return  */
 export default (req, res, next) => {
   if (!req.is('multipart/form-data')) return next();
 
@@ -20,6 +21,6 @@ export default (req, res, next) => {
       };
     }
     req.body = document;
-    return next();
+    next();
   });
 };

@@ -43,6 +43,7 @@ app.use('/graphiql', graphiqlExpress({
   endpointURL,
   subscriptionsEndpoint,
 }));
+app.use('/files', express.static('files'));
 
 // before running the server, we need to sync the db models that we created with sequelize.
 // this returns a promise. When it is resolved, we can start the server.
