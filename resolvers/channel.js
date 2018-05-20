@@ -4,36 +4,59 @@ import { requiresAuth } from '../permissions'; // for formatting the sequelize v
 export default {
   Mutation: {
     getOrCreateChannel: requiresAuth.createResolver(async (parent, { teamId, members }, { models, user }) => {
-      members.push(user.id);
-      const [data, result] = await models.sequelize.query(`
-        SELECT c.id
+      const member = await models.Member.findOne({
+        where: {
+          teamId, userId: user.id,
+        },
+      });
+
+      if (!member) {
+        throw new Error('Not authorized');
+      }
+
+      const allMembers = [...members, user.id];
+      const [data] = await models.sequelize.query(`
+        SELECT c.id, c.name
         FROM channels AS c, pcmembers AS PC
         WHERE pc.channel_id = c.id AND c.dm = true AND c.public = false AND c.team_id = ${teamId}
-        GROUP BY c.id
-        HAVING array_agg(pc.user_id) @> Array[${members.join(',')}] AND count(pc.user_id) = ${members.length}
+        GROUP BY c.id, c.name
+        HAVING array_agg(pc.user_id) @> Array[${allMembers.join(',')}] AND count(pc.user_id) = ${allMembers.length}
       `, {
         raw: true,
       });
 
       if (data.length) {
-        return data[0].id;
+        return data[0];
       }
+
+      const users = await models.User.findAll({
+        where: {
+          id: {
+            [models.sequelize.Op.in]: members,
+          },
+        },
+      });
+
+      const name = users.map(u => u.username).join(', ');
 
       const response = await models.sequelize.transaction(async (transaction) => {
         const channel = await models.Channel.create({
-          name: 'Hello',
+          name,
           public: false,
           dm: true,
           teamId,
         }, { transaction });
 
         const channelId = channel.dataValues.id;
-        const pcmembers = members.map(m => ({ userId: m, channelId }));
+        const pcmembers = allMembers.map(m => ({ userId: m, channelId }));
         await models.PCMember.bulkCreate(pcmembers, { transaction });
         return channelId;
       });
 
-      return response;
+      return {
+        id: response,
+        name,
+      };
     }),
     createChannel: requiresAuth.createResolver(async (parent, args, { models, user }) => {
       try {
