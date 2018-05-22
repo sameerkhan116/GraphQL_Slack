@@ -13,9 +13,17 @@ export default(sequelize, DataTypes) => {
   });
 
   // each channel belongs to a team and is connected with foreign key: teamId
+  // associated with the team model using the teamId key
+  // associated with the user model through the channel memmber table using the key channelID.
+  // associated with the user model through the PCMember table on the channelId key
   Channel.associate = (models) => {
     // 1:M
-    Channel.belongsTo(models.Team, { foreignKey: { name: 'teamId', field: 'team_id' } });
+    Channel.belongsTo(models.Team, {
+      foreignKey: {
+        name: 'teamId',
+        field: 'team_id',
+      },
+    });
     Channel.belongsToMany(models.User, {
       through: 'channel_member',
       foreignKey: {

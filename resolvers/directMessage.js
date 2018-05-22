@@ -7,6 +7,7 @@ const NEW_DIRECT_MESSAGE = 'NEW_DIRECT_MESSAGE';
 
 export default {
   Subscription: {
+    // the subscription set up for direct messages.
     newDirectMessage: {
       subscribe: directMessageSubscription.createResolver(withFilter(
         () => pubsub.asyncIterator(NEW_DIRECT_MESSAGE),
