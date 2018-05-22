@@ -76,6 +76,7 @@ models.sequelize.sync().then(() => {
         return {};
       },
     }, {
+      // the endpoint for subscriptions
       server,
       path: '/subscriptions',
     });
