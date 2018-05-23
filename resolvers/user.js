@@ -32,6 +32,8 @@ export default {
     },
   },
   User: {
+    // to get the teams for the user, we join the members and teams table on the teamId and where
+    // the userId is the id of the user in context.
     teams: requiresAuth.createResolver((parent, args, { models, user }) =>
       models.sequelize.query('SELECT * FROM teams JOIN members ON id = team_id WHERE user_id = ?', {
         replacements: [user.id],
