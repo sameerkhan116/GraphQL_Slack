@@ -4,6 +4,12 @@ export default(sequelize, DataTypes) => {
     text: DataTypes.STRING,
     url: DataTypes.STRING,
     filetype: DataTypes.STRING,
+  }, {
+    indexes: [
+      {
+        fields: ['created_at'],
+      },
+    ],
   });
 
   // Each message in db is associated with a channel using a foreign key channelId.

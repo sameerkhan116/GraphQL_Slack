@@ -21,36 +21,49 @@ export default {
   },
   Query: {
     // query to get an array of messages.
-    messages: requiresAuth.createResolver(async (parent, { channelId }, { models, user }) => {
-      // find the channel where channelId is same as that passed in args.
-      const channel = await models.Channel.findOne({
-        where: {
-          id: channelId,
-        },
-      });
-
-      // the channel is private, check if the current user in the context is a member of this channel
-      // if he isn't, throw an error.
-      if (!channel.public) {
-        const member = await models.PCMember.findOne({
-          raw: true,
+    messages:
+      requiresAuth.createResolver(async (parent, { cursor, channelId }, { models, user }) => {
+        // find the channel where channelId is same as that passed in args.
+        const channel = await models.Channel.findOne({
           where: {
-            channelId,
-            userId: user.id,
+            id: channelId,
           },
         });
-        if (!member) {
-          throw new Error('This is a private channel');
-        }
-      }
 
-      // otherwise, return the message in ascending order where the messages have the saem channelId
-      // as that passed in args.
-      return models.Message.findAll(
-        { order: [['created_at', 'ASC']], where: { channelId } },
-        { raw: true },
-      );
-    }),
+        // the channel is private, check if the current user in the context is a member of this
+        // channel if he isn't, throw an error.
+        if (!channel.public) {
+          const member = await models.PCMember.findOne({
+            raw: true,
+            where: {
+              channelId,
+              userId: user.id,
+            },
+          });
+          if (!member) {
+            throw new Error('This is a private channel');
+          }
+        }
+
+        const options = {
+          order: [['created_at', 'DESC']],
+          where: { channelId },
+          limit: 35,
+        };
+
+        if (cursor) {
+          options.where.created_at = {
+            [models.Sequelize.Op.lt]: cursor,
+          };
+        }
+
+        // otherwise, return the message in ascending order where the messages have the same
+        // channelId as that passed in args.
+        return models.Message.findAll(
+          options,
+          { raw: true },
+        );
+      }),
   },
   Mutation: {
     // the createMessage mutation.
@@ -96,8 +109,8 @@ export default {
       }),
   },
   Message: {
-    // url for the message type. WE do this so that everytime, we try to access the file, we don't need
-    // to prepend the site url.
+    // url for the message type. WE do this so that everytime, we try to access the file, we don't
+    // need to prepend the site url.
     url: parent => (parent.url ? `http://localhost:3000/${parent.url}` : parent.url),
     user: async ({ user, userId }, args, { models }) => {
       if (user) {
