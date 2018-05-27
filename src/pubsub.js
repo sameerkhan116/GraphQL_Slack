@@ -4,7 +4,7 @@ import { RedisPubSub } from 'graphql-redis-subscriptions';
 // used for a production build.
 export default new RedisPubSub({
   connection: {
-    host: '127.0.0.1',
+    host: process.env.REDIS_HOST || '127.0.0.1',
     port: '6379',
     retryStrategy: options => Math.max(options.attempt * 100, 3000),
   },

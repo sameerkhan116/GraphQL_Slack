@@ -16,6 +16,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 const sequelize = new _sequelize2.default(process.env.TEST_DB || 'graphql_slack', 'root', '12345', {
   dialect: 'postgres', // specifying the language of the database
   operatorsAliases: _sequelize2.default.Op, // to remove the deprecation warning
+  host: process.env.DB_HOST || 'localhost',
   define: {
     underscored: true
   }
