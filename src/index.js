@@ -10,11 +10,13 @@ import jwt from 'jsonwebtoken';
 import path from 'path'; // for specifying the dirname to types and resolvers
 import cors from 'cors'; // for cross origin resource sharing
 import 'colors'; // for adding colors to the terminal.
+import DataLoader from 'dataloader'; // to allow batched and cached backend requests
 
-import models from './models'; // the DB models we setup using psql and sequelize.
+import models from './models'; // the DB models we setup usi./src/addUsernd sequelize.
 import { addUser } from './addUser';
 import { refreshTokens } from './auth'; // required for refreshing tokens
 import fileUpload from './fileMiddleware';
+import { channelBatcher } from './batchFunctions';
 
 const typeDefs = mergeTypes(fileLoader(path.join(__dirname, './types'))); // // merege all modularized types
 const resolvers = mergeResolvers(fileLoader(path.join(__dirname, './resolvers'))); // merege all modularized resolvers
@@ -37,6 +39,8 @@ app.use(endpointURL, bodyParser.json(), fileUpload, graphqlExpress(req => ({
     user: req.user, // attach the user from addUser middleware
     SECRET,
     SECRET2,
+    channelLoader: new DataLoader(ids => channelBatcher(ids, models, req.user)),
+    serverUrl: `${req.protocol}://${req.get('host')}`,
   },
 })));
 app.use('/graphiql', graphiqlExpress({

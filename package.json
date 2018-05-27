@@ -4,8 +4,10 @@
   "description": "A slack clone using graphql, express and react.",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon --exec babel-node index.js",
-    "test-server": "./reset_test_db.sh; TEST_DB=test_slack nodemon --exec babel-node index.js",
+    "serve": "node dist/index.js",
+    "build": "babel src -d dist",
+    "start": "nodemon --exec babel-node src/index.js",
+    "test-server": "./reset_test_db.sh; TEST_DB=test_slack nodemon --exec babel-node src/index.js",
     "test": "jest"
   },
   "repository": "git+ssh://git@github.com/sameerkhan116/GraphQL_Slack.git",
@@ -21,6 +23,7 @@
     "body-parser": "^1.18.2",
     "colors": "^1.2.1",
     "cors": "^2.8.4",
+    "dataloader": "^1.4.0",
     "express": "^4.16.3",
     "formidable": "^1.2.1",
     "graphql": "^0.13.2",

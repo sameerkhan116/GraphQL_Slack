@@ -90,19 +90,7 @@ export default {
     // to get the channels for the team, we use this query - join channel with pcMembers where
     // channelId is the pcmembers.channel_id. We search where current team is the teamId passed
     // in args and the channel is public or pc.user_id is the same as the id of the user in context.
-    channels: ({ id }, args, { models, user }) =>
-      models.sequelize.query(`
-        SELECT DISTINCT ON (id) * 
-        FROM channels AS c LEFT OUTER JOIN pcmembers AS pc
-        ON c.id = pc.channel_id
-        WHERE c.team_id = :teamId AND (c.public = true OR pc.user_id = :userId)`, {
-        replacements: {
-          teamId: id,
-          userId: user.id,
-        },
-        model: models.Channel,
-        raw: true,
-      }),
+    channels: ({ id }, args, { channelLoader }) => channelLoader.load(id),
     // to get theh directMessageMembers, we join the users table with the dm table. The user id
     // should match the sender or receiver id in the dm table and the team should match the teamId
     // in the parent.

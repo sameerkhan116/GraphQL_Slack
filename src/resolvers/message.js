@@ -111,7 +111,7 @@ export default {
   Message: {
     // url for the message type. WE do this so that everytime, we try to access the file, we don't
     // need to prepend the site url.
-    url: parent => (parent.url ? `http://localhost:3000/${parent.url}` : parent.url),
+    url: (parent, args, { serverUrl }) => (parent.url ? `${serverUrl}/${parent.url}` : parent.url),
     user: async ({ user, userId }, args, { models }) => {
       if (user) {
         return user;
